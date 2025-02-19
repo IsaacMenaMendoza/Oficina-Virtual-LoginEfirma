@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login con e.firma</title>
+    <link rel="stylesheet" type="text/css" href="stylesLogin.css">
+</head>
+<body>
+    <div class="container">
+        <div class="box signin">
+            <h2>Ya tiene una cuenta?</h2>
+            <button class="signinBtn">Acceder</button>
+        </div>
+        <div class="box signup">
+            <h2>No tienes una cuenta?</h2>
+            <button class="signupBtn">Registrarte</button>
+        </div>
+        <div class="formBx">
+            <div class="form signinForm">
+                <form>
+                    <h3>Acceder</h3>
+                    <input type="text" placeholder="Username">
+                    <input type="password" placeholder="Password">
+                    <input type="submit" value="Acceder">
+                    <a href="#" class="efirma">Acceder con e.firma</a>
+                    <a href="#" class="forgot">Acceder vía 2 pasos</a>
+                    <a href="#" class="forgot">Olvidé mi contraseña</a>
+                </form>
+            </div>
+            <div class="form signupForm">
+                <form>
+                    <h3>Registrarte</h3>
+                    <input type="text" placeholder="Username">
+                    <input type="text" placeholder="Email">
+                    <input type="password" placeholder="Password">
+                    <input type="password" placeholder="Confirmar password">
+                    <input type="submit" value="Registrar">
+                </form>
+            </div>
+            <div class="form efirmaForm" style="display: none;">
+                <form id="efirmaForm">
+                    <h3>Acceder con e.firma</h3>
+                    <input type="file" id="certFile" accept=".cer">
+                    <input type="file" id="keyFile" accept=".key">
+                    <input type="password" id="password" placeholder="Contraseña e.firma">
+                    <input type="submit" value="Validar e.firma">
+                </form>
+            </div>
+        </div>
+    </div>
+    <script>
+        let signinBtn = document.querySelector('.signinBtn');
+        let signupBtn = document.querySelector('.signupBtn');
+        let efirmaBtn = document.querySelector('.efirma');
+        let body = document.querySelector('body');
+        let efirmaForm = document.querySelector('.efirmaForm');
+        let signinForm = document.querySelector('.signinForm');
+
+        signupBtn.onclick = function() {
+            body.classList.add('slide');
+        }
+        signinBtn.onclick = function() {
+            body.classList.remove('slide');
+        }
+        efirmaBtn.onclick = function(event) {
+            event.preventDefault();
+            signinForm.style.display = 'none';
+            efirmaForm.style.display = 'block';
+        }
+
+        document.getElementById('efirmaForm').onsubmit = async function(event) {
+            event.preventDefault();
+            
+            let cert = document.getElementById('certFile').files[0];
+            let key = document.getElementById('keyFile').files[0];
+            let password = document.getElementById('password').value;
+            
+            if (!cert || !key || !password) {
+                alert('Por favor, sube los archivos y la contraseña.');
+                return;
+            }
+
+            let formData = new FormData();
+            formData.append('certFile', cert); // Cambiado para coincidir con FastAPI
+            formData.append('keyFile', key);
+            formData.append('password', password);
+
+            try {
+                let response = await fetch('http://localhost:8000/validar-efirma', { // URL corregida
+                    method: 'POST',
+                    body: formData,
+                });
+
+                let result = await response.json();
+                if (response.ok) {
+                    alert(result.message); // Muestra el mensaje del backend
+                } else {
+                    alert('Error: ' + result.detail);
+                }
+            } catch (error) {
+                alert('Hubo un error al procesar la e.firma.');
+                console.error(error);
+            }
+        };
+    </script>
+</body>
+</html>
