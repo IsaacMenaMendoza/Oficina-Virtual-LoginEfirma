@@ -12,7 +12,7 @@ const Login = ({ setIsAuthenticated }) => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:3000/login", {
+      const response = await fetch("http://127.0.0.1:8000/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
@@ -47,7 +47,7 @@ const Login = ({ setIsAuthenticated }) => {
     formData.append("password", password);
 
     try {
-      const response = await fetch("http://localhost:3000/validarEfirma", {
+      const response = await fetch("http://127.0.0.1:8000/login", {
         method: "POST",
         body: formData,
       });
@@ -67,14 +67,20 @@ const Login = ({ setIsAuthenticated }) => {
   };
 
   return (
-    <div className="container">
+    <div className={`container ${isRegistering ? "slide" : ""}`}>
       <div className="box signin">
-        <h2>Ya tiene una cuenta?</h2>
-        <button className="signinBtn" onClick={() => { setIsRegistering(false); setIsEfirma(false); }}>Acceder</button>
+        <h2>¿Ya tienes una cuenta?</h2>
+        <button className="signinBtn" onClick={() => { 
+          setIsRegistering(false); 
+          setIsEfirma(false); 
+        }}>Acceder</button>
       </div>
       <div className="box signup">
-        <h2>No tienes una cuenta?</h2>
-        <button className="signupBtn" onClick={() => { setIsRegistering(true); setIsEfirma(false); }}>Registrarte</button>
+        <h2>¿No tienes una cuenta?</h2>
+        <button className="signupBtn" onClick={() => { 
+          setIsRegistering(true); 
+          setIsEfirma(false); 
+        }}>Registrarte</button>
       </div>
       <div className="formBx">
         {!isRegistering && !isEfirma && (
@@ -100,7 +106,7 @@ const Login = ({ setIsAuthenticated }) => {
             </form>
           </div>
         )}
-
+  
         {isRegistering && (
           <div className="form signupForm">
             <form>
@@ -113,7 +119,7 @@ const Login = ({ setIsAuthenticated }) => {
             </form>
           </div>
         )}
-
+  
         {isEfirma && (
           <div className="form efirmaForm">
             <form onSubmit={handleEfirmaLogin}>
@@ -128,6 +134,5 @@ const Login = ({ setIsAuthenticated }) => {
       </div>
     </div>
   );
-};
-
+}  
 export default Login;
